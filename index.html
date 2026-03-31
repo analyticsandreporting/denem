@@ -796,7 +796,7 @@ function mkData(){
 
 function mkMailHTML(d){
   const skorRenk=d.skor>=80?'#15803D':d.skor>=60?'#B45309':'#B91C1C';
-  const skorEtiket=d.skor>=80?'Uygun':'d.skor>=60?Geliştirilmeli':'Kritik';
+  const skorEtiket=d.skor>=80?'Uygun':d.skor>=60?'Geliştirilmeli':'Kritik';
   const kl=['1S','2S','3S','4S','5S'];
   const kn={'1S':'1S · Ayıkla','2S':'2S · Düzenle','3S':'3S · Temizle','4S':'4S · Standartlaştır','5S':'5S · Sürdür'};
   const kc={'1S':'#0078BE','2S':'#1A7A4A','3S':'#B91C1C','4S':'#6D28D9','5S':'#D97706'};
