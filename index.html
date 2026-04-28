@@ -224,6 +224,18 @@ select{-webkit-appearance:none;appearance:none;background-image:url("data:image/
 <body>
 <div class="app">
 
+<!-- LOADING EKRANI -->
+<div id="loadingScreen" style="position:fixed;inset:0;background:var(--arvato);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s ease">
+  <div style="background:#fff;border-radius:10px;padding:10px 24px">
+    <span style="font-size:22px;font-weight:700;color:var(--arvato);letter-spacing:-.5px;font-family:'Inter',sans-serif">arvato</span>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+    <div id="loadingSpinner" style="width:40px;height:40px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+    <div id="loadingText" style="font-size:13px;color:rgba(255,255,255,.8);font-weight:500">Sorular yükleniyor...</div>
+  </div>
+  <div style="font-size:11px;color:rgba(255,255,255,.4)">LENS 5S Denetim Sistemi</div>
+</div>
+
 <!-- S0: GİRİŞ -->
 <div class="screen active" id="s0">
   <div style="background:var(--arvato);padding:40px 20px 32px;display:flex;flex-direction:column;align-items:center;gap:16px">
@@ -320,7 +332,7 @@ select{-webkit-appearance:none;appearance:none;background-image:url("data:image/
       <div class="card-label">Platform ve Proje Seç</div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <select id="pSel" onchange="chkM()" style="flex:1"><option value="">Platform seçin...</option></select>
-        <select id="prjSel" onchange="chkM()" style="flex:1"><option value="">Proje seçin...</option><option value="IKEA">IKEA</option><option value="Decathlon">Decathlon</option><option value="Derimod">Derimod</option></select>
+        <select id="prjSel" onchange="chkM()" style="flex:1"><option value="">Proje seçin...</option></select>
       </div>
       <input type="text" id="qrM" placeholder="veya QR kodu: P01-A01" oninput="this.value=this.value.toUpperCase();chkM()" style="margin-bottom:8px">
       <select id="aSel" style="display:none"></select>
@@ -472,53 +484,83 @@ const YONETICI_MAILLERI=['enes.cakar@arvato.com','ekrem.aydogdu@arvato.com','ogu
 // Sicil no -> mail eşleştirme tablosu
 const DENETCI_MAILLERI={"1477": "mesut.demir@arvato.com", "1127": "umut.tas@arvato.com", "1224": "oguz.sevindik@arvato.com", "1363": "yasin.tercan@arvato.com", "1185": "abdulkadir.yazici@arvato.com", "2758": "senem.ciftci@arvato.com", "7219": "ramazan.durmus@arvato.com", "1210": "mustafa.uzum@arvato.com", "2792": "mehmet.yilmaz@arvato.com", "5550": "ugurcan.ustun@arvato.com", "2309": "bugra.ozturk@arvato.com", "3423": "ilyas.teymur@arvato.com", "1663": "yasar.yazici@arvato.com", "2368": "okan.alkan@arvato.com", "9967": "can.yilmaz@arvato.com", "1972": "mucahit.ozkan@arvato.com", "1122": "emirhan.coskun@arvato.com", "1993": "ferhat.akman@arvato.com", "6251": "ferhat.kurt@arvato.com", "5498": "samet.yuksel@arvato.com", "2187": "yasin.aydin@arvato.com", "1141": "busra.kayaoglu@arvato.com", "1533": "umay.kayaalp@arvato.com", "2290": "kubra.kilinc@arvato.com", "5053": "meltem.kocael@arvato.com", "7074": "aysenur.bika@arvato.com", "7483": "ahmet.aslan@arvato.com", "10145": "berfin.dogan@arvato.com", "15666": "emre.bektas@arvato.com", "16007": "ekrem.aydogdu@arvato.com", "17271": "irem.polat@arvato.com", "18759": "aksanur.olgun@arvato.com", "18935": "mucahit.celiker@arvato.com", "19335": "emre.deger@arvato.com", "19404": "enes.cakar@arvato.com", "20101": "azad.tunc@arvato.com", "21970": "eser.cagatay@arvato.com", "22558": "hazar.saricimen@arvato.com", "23265": "oguzcan.yuce@arvato.com", "1743": "firat.arguden@arvato.com"};
 // Projeler (sorular projeID bazında filtrelenecek)
-const PRJ={"IKEA":"IKEA","Decathlon":"Decathlon","Derimod":"Derimod"};
-const PRJ_ALANLAR={"IKEA": {"A01": "Mal Kabul", "A02": "MZ - Paketleme", "A03": "YK - Paketleme", "A04": "MZ Raf Alanları", "A05": "Akü-YK Raf Alanları", "A06": "İade Alanı", "A07": "Sevkiyat", "A08": "Rampa"}, "Derimod": {"A09": "Mal Kabul", "A10": "Raf Alanları", "A11": "Paketleme", "A12": "Sevkiyat", "A13": "İade Alanı"}, "Decathlon": {"A14": "Mal Kabul", "A15": "Raf Alanları", "A16": "Paketleme", "A17": "Sevkiyat", "A18": "İade Alanı"}};
+let PRJ={"IKEA":"IKEA","Decathlon":"Decathlon","Derimod":"Derimod"};
+let PRJ_ALANLAR={"IKEA": {"A01": "Mal Kabul", "A02": "MZ - Paketleme", "A03": "YK - Paketleme", "A04": "MZ Raf Alanları", "A05": "Akü-YK Raf Alanları", "A06": "İade Alanı", "A07": "Sevkiyat", "A08": "Rampa"}, "Derimod": {"A09": "Mal Kabul", "A10": "Raf Alanları", "A11": "Paketleme", "A12": "Sevkiyat", "A13": "İade Alanı"}, "Decathlon": {"A14": "Mal Kabul", "A15": "Raf Alanları", "A16": "Paketleme", "A17": "Sevkiyat", "A18": "İade Alanı"}};
 // Tek platform
-const AL={"A01": "Mal Kabul", "A02": "MZ - Paketleme", "A03": "YK - Paketleme", "A04": "MZ Raf Alanları", "A05": "Akü-YK Raf Alanları", "A06": "İade Alanı", "A07": "Sevkiyat", "A08": "Rampa", "A09": "Mal Kabul", "A10": "Raf Alanları", "A11": "Paketleme", "A12": "Sevkiyat", "A13": "İade Alanı", "A14": "Mal Kabul", "A15": "Raf Alanları", "A16": "Paketleme", "A17": "Sevkiyat", "A18": "İade Alanı"};
-const PL={"P04":"Platform L"};
+let AL={"A01": "Mal Kabul", "A02": "MZ - Paketleme", "A03": "YK - Paketleme", "A04": "MZ Raf Alanları", "A05": "Akü-YK Raf Alanları", "A06": "İade Alanı", "A07": "Sevkiyat", "A08": "Rampa", "A09": "Mal Kabul", "A10": "Raf Alanları", "A11": "Paketleme", "A12": "Sevkiyat", "A13": "İade Alanı", "A14": "Mal Kabul", "A15": "Raf Alanları", "A16": "Paketleme", "A17": "Sevkiyat", "A18": "İade Alanı"};
+const PL={"PL":"Platform L"};
 // 5S_Sorular — SharePoint'ten çekilir (Power Automate flow URL'si aşağıya girilecek)
 const SORULAR_FLOW_URL = 'https://default659c3a90ec904772b772cebe2050a8.2e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/115a64ccbf3e43ef9a6a7d3a9661b128/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=oD9vvUMvXt9XP7ZiLdhvxsgBVs5siu9r7ltfSfcZsgk';
 let SR = []; // Başlangıçta boş — uygulama açılışında doldurulur
 
 async function soruYukle() {
-  // Yükleme göstergesi
-  const loginBtn = document.getElementById('loginBtn');
-  const loginCard = document.querySelector('#s0 .card');
-  let yuklemeDiv = document.getElementById('soruYukleme');
-  if (!yuklemeDiv) {
-    yuklemeDiv = document.createElement('div');
-    yuklemeDiv.id = 'soruYukleme';
-    yuklemeDiv.style.cssText = 'font-size:11px;color:var(--text-soft);text-align:center;padding:6px;display:flex;align-items:center;justify-content:center;gap:6px';
-    yuklemeDiv.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Sorular yükleniyor...';
-    loginCard.appendChild(yuklemeDiv);
-  }
+  const loadingScreen = document.getElementById('loadingScreen');
+  const loadingText   = document.getElementById('loadingText');
 
   try {
-    const r = await fetch(SORULAR_FLOW_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
+    loadingText.textContent = 'Sorular yükleniyor...';
+    const r = await fetch(SORULAR_FLOW_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
     const d = await r.json();
-    // Power Automate'ten gelen items dizisini SR formatına çevir
     const items = d.value || d.items || d || [];
+
     SR = items.map(item => ({
-      id:      item.SoruID    || item.Title || '',
-      projeID: item.ProjeAdi  || '',
-      alanID:  item.AlanID    || '',
-      k:       item.S_Kategori|| '',
+      id:      item.SoruID     || item.Title || '',
+      projeID: item.ProjeAdi   || '',
+      alanID:  item.AlanID     || '',
+      alanAdi: item.AlanAdi    || item.AlanID || '',
+      platID:  item.PlatformID || 'PL',
+      k:       item.S_Kategori || '',
       no:      Number(item.SiraNo) || 0,
-      s:       item.Soru      || '',
+      s:       item.Soru       || '',
       kritik:  (item.KritikMi === 'Evet' || item.KritikMi === true)
     })).sort((a, b) => {
       if (a.projeID !== b.projeID) return a.projeID.localeCompare(b.projeID);
       if (a.alanID  !== b.alanID)  return a.alanID.localeCompare(b.alanID);
       return a.no - b.no;
     });
-    yuklemeDiv.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803D" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> <span style="color:#15803D">${SR.length} soru yüklendi</span>`;
-    setTimeout(() => yuklemeDiv && yuklemeDiv.remove(), 2500);
+
+    // AL, PRJ ve PRJ_ALANLAR'ı SR'den dinamik türet
+    const prjSet = {};
+    const prjAlanSet = {};
+    SR.forEach(s => {
+      if (!s.projeID) return;
+      prjSet[s.projeID] = s.projeID;
+      // AL objesini güncelle — alanID → alanAdi
+      if (s.alanID && s.alanAdi) AL[s.alanID] = s.alanAdi;
+      if (!prjAlanSet[s.projeID]) prjAlanSet[s.projeID] = {};
+      if (s.alanID) prjAlanSet[s.projeID][s.alanID] = s.alanAdi || s.alanID;
+    });
+    // Global PRJ ve PRJ_ALANLAR'ı güncelle
+    Object.keys(prjSet).forEach(k => { PRJ[k] = k; });
+    Object.keys(prjAlanSet).forEach(k => { PRJ_ALANLAR[k] = prjAlanSet[k]; });
+
+    // Proje dropdown'ını doldur
+    const prjSel = document.getElementById('prjSel');
+    prjSel.innerHTML = '<option value="">Proje seçin...</option>';
+    Object.keys(prjSet).sort().forEach(prj => {
+      const o = document.createElement('option');
+      o.value = prj; o.textContent = prj;
+      prjSel.appendChild(o);
+    });
+
+    loadingText.textContent = `✓ ${SR.length} soru yüklendi`;
+    setTimeout(() => {
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => loadingScreen.style.display = 'none', 400);
+    }, 600);
+
   } catch (e) {
-    console.warn('Sorular SharePoint\'ten yüklenemedi, statik veriye dönülüyor:', e);
-    yuklemeDiv.innerHTML = '<span style="color:var(--amber)">⚠ Bağlantı yok — önbellek kullanılıyor</span>';
-    setTimeout(() => yuklemeDiv && yuklemeDiv.remove(), 3000);
-    // Statik yedek (boş kalırsa denetim başlamaz)
+    console.warn('Sorular yüklenemedi:', e);
+    loadingText.textContent = '⚠ Bağlantı hatası — tekrar dene';
+    // Hata durumunda yine de devam et — mevcut PRJ/PRJ_ALANLAR statik kalır
+    setTimeout(() => {
+      loadingScreen.style.opacity = '0';
+      setTimeout(() => loadingScreen.style.display = 'none', 400);
+    }, 2000);
   }
 }
 
@@ -619,10 +661,9 @@ async function sifreDegistir(){
 
 function init(){
   const ps=document.getElementById('pSel');
-  Object.entries(PL).forEach(([id,ad])=>{const o=document.createElement('option');o.value=id;o.textContent=ad+' ('+id+')';ps.appendChild(o);});
-  // Tek platform varsa otomatik seç
+  Object.entries(PL).forEach(([id,ad])=>{const o=document.createElement('option');o.value=id;o.textContent=ad;ps.appendChild(o);});
+  // Tek platform varsa otomatik seç ve gizle
   if(Object.keys(PL).length===1){ps.value=Object.keys(PL)[0];ps.disabled=true;}
-  // Alan dropdown başlangıçta boş — proje seçilince dolacak
 }
 
 // Proje değişince alan dropdown'unu filtrele
@@ -656,22 +697,24 @@ function chkM(){
   const p=document.getElementById('pSel').value;
   const prj=document.getElementById('prjSel').value;
   const m=document.getElementById('qrM').value.trim();
-  const ok=(p&&prj)||m.match(/^P\d{2}-A\d{2}$/);
+  const ok=(p&&prj)||m.match(/^[A-Z]{2,3}-A\d{2}$/i);
   document.getElementById('mBtn').disabled=!ok;
 }
 
 function manuelGiris(){
   const m=document.getElementById('qrM').value.trim().toUpperCase();
   let pid,aid=null;
-  if(m.match(/^P\d{2}-A\d{2}$/)){
-    [pid,aid]=m.split('-');
+  if(m.match(/^[A-Z]{2,3}-A\d{2}$/i)){
+    const parts=m.split('-');
+    pid=parts[0]; aid=parts[1];
     if(!PL[pid]){showToast('Geçersiz platform: '+pid);return;}
     if(!AL[aid]){showToast('Geçersiz alan: '+aid);return;}
   } else {
     pid=document.getElementById('pSel').value;
-    if(!PL[pid]){showToast('Lütfen platform seçin');return;}
+    if(!pid){showToast('Lütfen platform seçin');return;}
   }
-  const prj=document.getElementById('prjSel').value||'IKEA';
+  const prj=document.getElementById('prjSel').value;
+  if(!prj){showToast('Lütfen proje seçin');return;}
   st.pid=pid;st.aid=aid;st.prj=prj;
   goAlan();
 }
@@ -679,9 +722,14 @@ function manuelGiris(){
 function goAlan(){
   document.getElementById('s1bT').textContent=(PRJ[st.prj]||st.prj)+' · '+(PL[st.pid]||st.pid);
   const g=document.getElementById('aGrid');g.innerHTML='';
-  const prjAlanlar=PRJ_ALANLAR[st.prj]||{};
-  Object.entries(prjAlanlar).forEach(([id,ad])=>{
-    if(!SR.some(s=>s.alanID===id&&s.projeID===st.prj))return;
+  // Alan listesini doğrudan SR'den üret — seçili proje+platform kombinasyonuna göre
+  const gorulenAlanlar = {};
+  SR.forEach(s => {
+    if(s.projeID===st.prj && s.alanID && !gorulenAlanlar[s.alanID]){
+      gorulenAlanlar[s.alanID] = s.alanAdi || AL[s.alanID] || s.alanID;
+    }
+  });
+  Object.entries(gorulenAlanlar).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([id,ad])=>{
     const b=document.createElement('button');
     b.className='ab'+(id===st.aid?' sel':'');
     b.innerHTML='<div class="aid">'+id+'</div>'+ad;
@@ -691,7 +739,6 @@ function goAlan(){
     };
     g.appendChild(b);
   });
-  // QR ile geldiyse alan zaten seçili, butonu aktif et
   if(st.aid)chkB();
   goScreen('s1b');
   const dEl=document.getElementById('dAdi');
@@ -699,21 +746,21 @@ function goAlan(){
 }
 
 function chkB(){
-  const alanSec=!!st.aid;
-  document.getElementById('bBtn').disabled=!alanSec;
+  document.getElementById('bBtn').disabled=!st.aid;
 }
 
 function dBaslat(){
   st.dc=document.getElementById('dAdi').value.trim()||usr.adSoyad;
   st.sr=SR.filter(s=>s.alanID===st.aid&&s.projeID===st.prj);
   if(!st.sr.length){
-    showToast('Bu alan için '+PRJ[st.prj]+' sorusu bulunamadı!');return;
+    showToast('Bu alan için soru bulunamadı!');return;
   }
   st.cv={};st.nt={};st.ft={};st.fb={};
   st.baslangicZamani=Date.now();
   renderForm();
-  document.getElementById('s2T').textContent=AL[st.aid]+' · '+PRJ[st.prj];
-  document.getElementById('s2S').textContent='Platform L · '+st.pid;
+  const alanAdi = AL[st.aid] || st.aid;
+  document.getElementById('s2T').textContent=alanAdi+' · '+(PRJ[st.prj]||st.prj);
+  document.getElementById('s2S').textContent=(PL[st.pid]||st.pid);
   updBadge();goScreen('s2');
 }
 
@@ -731,7 +778,7 @@ async function startQR(){
         c.width=v.videoWidth;c.height=v.videoHeight;ctx.drawImage(v,0,0);
         try{const img=ctx.getImageData(0,0,c.width,c.height);const code=window.jsQR&&jsQR(img.data,img.width,img.height);
         if(code&&code.data){const val=code.data.toUpperCase().trim();const m=val.match(/P\d{2}-A\d{2}/);
-        if(m){const[pid,aid]=m[0].split('-');if(PL[pid]&&AL[aid]){stopQR();st.pid=pid;st.aid=aid;showToast('QR: '+m[0]);goAlan();return;}}
+        if(m){const parts=m[0].split('-');const pid=parts[0],aid=parts[1];if(PL[pid]&&AL[aid]){stopQR();st.pid=pid;st.aid=aid;showToast('QR: '+m[0]);goAlan();return;}}
         stopQR();showToast('Geçersiz QR kodu');return;}}catch(e){}
       }
       qrAF=requestAnimationFrame(tick);
