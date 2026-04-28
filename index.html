@@ -639,7 +639,7 @@ function renderForm(){
     h+=`<div class="kat-header" style="background:${kc[k]}"><span>${kn[k]}</span><span id="ks-${k}" style="font-family:'DM Mono',monospace;font-size:12px;opacity:.85">—</span></div>`;
     ks.forEach(s=>{h+=`<div class="soru-card" id="sc-${s.id}"><div class="soru-meta"><span class="soru-id">${s.id}</span><span class="kritik-tag">Kritik</span></div><div class="soru-text">${s.s}</div><div class="cevap-row"><button class="cevap-btn" id="ce-${s.id}" onclick="cv('${s.id}','Evet')">Evet</button><button class="cevap-btn" id="ch-${s.id}" onclick="cv('${s.id}','Hayır')">Hayır</button><button class="cevap-btn" id="cn-${s.id}" onclick="cv('${s.id}','NA')">N/A</button></div><div id="ex-${s.id}"></div></div>`;});
   });
-  h+=`<button class="btn btn-primary" style="margin-top:4px" onclick="gOzet()">Denetimi tamamla</button>`;
+  h+=`<button class="btn btn-primary" style="margin-top:4px" onclick="gOzet()">Sonuç Ekranı</button>`;
   document.getElementById('formBody').innerHTML=h;
 }
 
@@ -790,7 +790,7 @@ function renderOzet(){
   document.getElementById('i-tarih').textContent=new Date().toLocaleString('tr-TR');
   document.getElementById('s4S').textContent=PRJ[st.prj]+' · '+AL[st.aid];
   const kb=document.getElementById('kBtn');
-  kb.textContent="SharePoint'e Kaydet";kb.className='btn btn-success';kb.disabled=false;
+  kb.textContent="Denetimi Tamamla ve Kaydet";kb.className='btn btn-success';kb.disabled=false;
 }
 
 function mkData(){
